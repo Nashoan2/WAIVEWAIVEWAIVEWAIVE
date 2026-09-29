@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix Remix المملكة للإلكترونيات",
+  "description": "نظام الفواتير والتقارير وكشوفات الحسابات - المملكة للإلكترونيات",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
