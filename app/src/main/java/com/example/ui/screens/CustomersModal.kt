@@ -89,6 +89,8 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.theme.mandatoryTextFieldColors
 import com.example.ui.theme.optionalYellowTextFieldColors
 import com.example.ui.theme.standardAppTextFieldColors
+import com.example.ui.theme.LocalShadedFieldColor
+import com.example.ui.theme.LocalShadedFieldBorder
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.data.Customer
@@ -137,39 +139,47 @@ fun CustomersModal(viewModel: InvoiceViewModel, onDismiss: () -> Unit) {
             .padding(16.dp)
         ) {
           if (selectedTab < 0) {
-            // === شاشة إدارة العملاء الرئيسية مطابقة للصورة 11 تماماً ===
-            Row(
-              modifier = Modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.SpaceBetween,
-              verticalAlignment = Alignment.CenterVertically
+            // === ترويسة واجهة إدارة العملاء والحسابات باللون النيلي ===
+            Surface(
+              color = Color(0xFF1A237E),
+              shape = RoundedCornerShape(12.dp),
+              modifier = Modifier.fillMaxWidth()
             ) {
               Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 14.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
               ) {
-                Surface(
-                  shape = RoundedCornerShape(8.dp),
-                  color = Color(0xFF1A237E),
-                  modifier = Modifier.size(36.dp)
+                Row(
+                  verticalAlignment = Alignment.CenterVertically,
+                  horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                  Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                      Icons.Default.People,
-                      contentDescription = null,
-                      tint = Color.White,
-                      modifier = Modifier.size(22.dp)
-                    )
+                  Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color.White.copy(alpha = 0.2f),
+                    modifier = Modifier.size(36.dp)
+                  ) {
+                    Box(contentAlignment = Alignment.Center) {
+                      Icon(
+                        Icons.Default.People,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(22.dp)
+                      )
+                    }
                   }
+                  Text(
+                    text = "إدارة العملاء والحسابات",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.White
+                  )
                 }
-                Text(
-                  text = "إدارة العملاء والحسابات",
-                  fontSize = 18.sp,
-                  fontWeight = FontWeight.Black,
-                  color = Color(0xFF1A237E)
-                )
-              }
-              IconButton(onClick = onDismiss) {
-                Icon(Icons.Default.Close, contentDescription = "إغلاق", tint = Color(0xFF1A237E))
+                IconButton(onClick = onDismiss) {
+                  Icon(Icons.Default.Close, contentDescription = "إغلاق", tint = Color.White)
+                }
               }
             }
 
@@ -182,10 +192,10 @@ fun CustomersModal(viewModel: InvoiceViewModel, onDismiss: () -> Unit) {
                 .verticalScroll(rememberScrollState()),
               verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-              // 1. إضافة عميل جديد 👥 (Green)
+              // 1. إضافة عميل جديد 👥 (Indigo Primary)
               Button(
                 onClick = { selectedTab = 3 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF28A745)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A237E)),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                   .fillMaxWidth()
@@ -199,10 +209,10 @@ fun CustomersModal(viewModel: InvoiceViewModel, onDismiss: () -> Unit) {
                 )
               }
 
-              // 2. سند قبض 💰 (Golden / Amber)
+              // 2. سند قبض 💰 (Royal Indigo)
               Button(
                 onClick = { selectedTab = 0 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD49B00)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF283593)),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                   .fillMaxWidth()
@@ -216,10 +226,10 @@ fun CustomersModal(viewModel: InvoiceViewModel, onDismiss: () -> Unit) {
                 )
               }
 
-              // 3. سند صرف 💸 (Slate Blue)
+              // 3. سند صرف 💸 (Medium Indigo)
               Button(
                 onClick = { selectedTab = 1 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A86BA)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF303F9F)),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                   .fillMaxWidth()
@@ -233,10 +243,10 @@ fun CustomersModal(viewModel: InvoiceViewModel, onDismiss: () -> Unit) {
                 )
               }
 
-              // 4. جميع العملاء 📋 (Vivid Blue)
+              // 4. جميع العملاء 📋 (Vivid Indigo)
               Button(
                 onClick = { selectedTab = 2 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007BFF)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3949AB)),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                   .fillMaxWidth()
@@ -250,10 +260,10 @@ fun CustomersModal(viewModel: InvoiceViewModel, onDismiss: () -> Unit) {
                 )
               }
 
-              // 5. كشف حساب عميل 📊 (Slate Blue)
+              // 5. كشف حساب عميل 📊 (Royal Indigo)
               Button(
                 onClick = { selectedTab = 4 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A86BA)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF283593)),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                   .fillMaxWidth()
@@ -267,10 +277,10 @@ fun CustomersModal(viewModel: InvoiceViewModel, onDismiss: () -> Unit) {
                 )
               }
 
-              // 6. كشف حساب عميل من فترة الى فترة 📊 (Dark Charcoal)
+              // 6. كشف حساب عميل من فترة الى فترة 📊 (Indigo Primary)
               Button(
                 onClick = { selectedTab = 5 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF495057)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A237E)),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                   .fillMaxWidth()
@@ -731,6 +741,8 @@ fun VoucherCustomerPickerDialog(
 fun TabPaymentVoucher(viewModel: InvoiceViewModel) {
   val context = LocalContext.current
   val uiState by viewModel.uiState.collectAsState()
+  val shadedBg = LocalShadedFieldColor.current
+  val shadedBorder = LocalShadedFieldBorder.current
   var acc by remember { mutableStateOf("") }
   var amountStr by remember { mutableStateOf("") }
   var curr by remember { mutableStateOf("YER") }
@@ -804,8 +816,8 @@ fun TabPaymentVoucher(viewModel: InvoiceViewModel) {
             modifier = Modifier
               .fillMaxWidth()
               .height(48.dp)
-              .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
-              .border(1.dp, Color(0xFFFDA4AF), RoundedCornerShape(10.dp))
+              .background(shadedBg, RoundedCornerShape(10.dp))
+              .border(1.dp, shadedBorder, RoundedCornerShape(10.dp))
               .padding(horizontal = 14.dp),
             decorationBox = { innerTextField ->
               Box(
@@ -835,8 +847,8 @@ fun TabPaymentVoucher(viewModel: InvoiceViewModel) {
               modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
-                .border(1.dp, Color(0xFFFDA4AF), RoundedCornerShape(10.dp))
+                .background(shadedBg, RoundedCornerShape(10.dp))
+                .border(1.dp, shadedBorder, RoundedCornerShape(10.dp))
                 .clickable { currMenuExpanded = true }
                 .padding(horizontal = 12.dp)
             ) {
@@ -930,10 +942,10 @@ fun TabPaymentVoucher(viewModel: InvoiceViewModel) {
         modifier = Modifier
           .fillMaxWidth()
           .height(48.dp)
-          .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
+          .background(shadedBg, RoundedCornerShape(10.dp))
           .border(
             1.dp,
-            if (isAccNotFound) Color(0xFFEF4444) else Color(0xFFFDA4AF),
+            if (isAccNotFound) Color(0xFFEF4444) else shadedBorder,
             RoundedCornerShape(10.dp)
           )
           .padding(horizontal = 14.dp),
@@ -1099,8 +1111,8 @@ fun TabPaymentVoucher(viewModel: InvoiceViewModel) {
           modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
-            .border(1.dp, Color(0xFFFDA4AF), RoundedCornerShape(10.dp))
+            .background(shadedBg, RoundedCornerShape(10.dp))
+            .border(1.dp, shadedBorder, RoundedCornerShape(10.dp))
             .padding(horizontal = 14.dp),
           decorationBox = { innerTextField ->
             Box(
@@ -1135,8 +1147,8 @@ fun TabPaymentVoucher(viewModel: InvoiceViewModel) {
           modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
-            .border(1.dp, Color(0xFFFDA4AF), RoundedCornerShape(10.dp))
+            .background(shadedBg, RoundedCornerShape(10.dp))
+            .border(1.dp, shadedBorder, RoundedCornerShape(10.dp))
             .padding(horizontal = 14.dp),
           decorationBox = { innerTextField ->
             Box(
@@ -1602,6 +1614,8 @@ fun TabPaymentVoucher(viewModel: InvoiceViewModel) {
 fun TabReceiptVoucher(viewModel: InvoiceViewModel) {
   val context = LocalContext.current
   val uiState by viewModel.uiState.collectAsState()
+  val shadedBg = LocalShadedFieldColor.current
+  val shadedBorder = LocalShadedFieldBorder.current
   var acc by remember { mutableStateOf("") }
   var amountStr by remember { mutableStateOf("") }
   var curr by remember { mutableStateOf("YER") }
@@ -1675,8 +1689,8 @@ fun TabReceiptVoucher(viewModel: InvoiceViewModel) {
             modifier = Modifier
               .fillMaxWidth()
               .height(48.dp)
-              .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
-              .border(1.dp, Color(0xFFFDA4AF), RoundedCornerShape(10.dp))
+              .background(shadedBg, RoundedCornerShape(10.dp))
+              .border(1.dp, shadedBorder, RoundedCornerShape(10.dp))
               .padding(horizontal = 14.dp),
             decorationBox = { innerTextField ->
               Box(
@@ -1706,8 +1720,8 @@ fun TabReceiptVoucher(viewModel: InvoiceViewModel) {
               modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
-                .border(1.dp, Color(0xFFFDA4AF), RoundedCornerShape(10.dp))
+                .background(shadedBg, RoundedCornerShape(10.dp))
+                .border(1.dp, shadedBorder, RoundedCornerShape(10.dp))
                 .clickable { currMenuExpanded = true }
                 .padding(horizontal = 12.dp)
             ) {
@@ -1801,10 +1815,10 @@ fun TabReceiptVoucher(viewModel: InvoiceViewModel) {
         modifier = Modifier
           .fillMaxWidth()
           .height(48.dp)
-          .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
+          .background(shadedBg, RoundedCornerShape(10.dp))
           .border(
             1.dp,
-            if (isAccNotFound) Color(0xFFEF4444) else Color(0xFFFDA4AF),
+            if (isAccNotFound) Color(0xFFEF4444) else shadedBorder,
             RoundedCornerShape(10.dp)
           )
           .padding(horizontal = 14.dp),
@@ -1970,8 +1984,8 @@ fun TabReceiptVoucher(viewModel: InvoiceViewModel) {
           modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
-            .border(1.dp, Color(0xFFFDA4AF), RoundedCornerShape(10.dp))
+            .background(shadedBg, RoundedCornerShape(10.dp))
+            .border(1.dp, shadedBorder, RoundedCornerShape(10.dp))
             .padding(horizontal = 14.dp),
           decorationBox = { innerTextField ->
             Box(
@@ -2006,8 +2020,8 @@ fun TabReceiptVoucher(viewModel: InvoiceViewModel) {
           modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(Color(0xFFFFF0F3), RoundedCornerShape(10.dp))
-            .border(1.dp, Color(0xFFFDA4AF), RoundedCornerShape(10.dp))
+            .background(shadedBg, RoundedCornerShape(10.dp))
+            .border(1.dp, shadedBorder, RoundedCornerShape(10.dp))
             .padding(horizontal = 14.dp),
           decorationBox = { innerTextField ->
             Box(

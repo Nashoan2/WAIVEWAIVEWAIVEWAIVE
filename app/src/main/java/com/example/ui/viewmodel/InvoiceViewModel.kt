@@ -429,15 +429,20 @@ class InvoiceViewModel(application: Application) : AndroidViewModel(application)
   private fun calculateInitialExpiryDate(months: Int): String {
     val cal = Calendar.getInstance()
     cal.add(Calendar.MONTH, months)
+    cal.add(Calendar.DAY_OF_MONTH, -1)
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.US)
     return sdf.format(cal.time)
   }
 
   fun calculateExpiryDate() {
+    // في حالة تعديل فاتورة لا يتغير تاريخ انتهاء الاشتراك نهائياً
+    if (_uiState.value.editingInvoiceId != null) return
     if (_uiState.value.subscriptionType == "tournament") return
     val months = _uiState.value.qty.toIntOrNull() ?: 3
+    if (months <= 0) return
     val cal = Calendar.getInstance()
     cal.add(Calendar.MONTH, months)
+    cal.add(Calendar.DAY_OF_MONTH, -1)
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.US)
     _uiState.value = _uiState.value.copy(endDate = sdf.format(cal.time))
   }
@@ -1123,7 +1128,7 @@ class InvoiceViewModel(application: Application) : AndroidViewModel(application)
           type = state.subscriptionType,
           qty = qty,
           desc = mainDesc,
-          endDate = state.endDate,
+          endDate = if (existingInv.endDate.isNotBlank()) existingInv.endDate else state.endDate,
           currency = state.currency,
           extraItems = state.extraItems,
           grandTotal = grandTotal,

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -109,6 +110,29 @@ fun ReportCustomizerModal(
   var activeTab by remember { mutableStateOf(0) }
   var showResetConfirm by remember { mutableStateOf(false) }
   var showShadedFieldColorDialog by remember { mutableStateOf(false) }
+
+  var headerTitle by remember(config.customHeaderTitle) { mutableStateOf(config.customHeaderTitle) }
+  var noticeBadge by remember(config.customNoticeBadge) { mutableStateOf(config.customNoticeBadge) }
+  var taxCrNumber by remember(config.taxOrCrNumber) { mutableStateOf(config.taxOrCrNumber) }
+  var footerText by remember(config.customFooterText) { mutableStateOf(config.customFooterText) }
+  var accountantName by remember(config.accountantSignatureName) { mutableStateOf(config.accountantSignatureName) }
+  var managerName by remember(config.managerSignatureName) { mutableStateOf(config.managerSignatureName) }
+  var invoiceTerms by remember(uiState.storeConfig.terms) { mutableStateOf(uiState.storeConfig.terms) }
+
+  fun saveCustomTextChanges() {
+    val updated = config.copy(
+      customHeaderTitle = headerTitle.trim(),
+      customNoticeBadge = noticeBadge.trim(),
+      taxOrCrNumber = taxCrNumber.trim(),
+      customFooterText = footerText.trim(),
+      accountantSignatureName = accountantName.trim(),
+      managerSignatureName = managerName.trim()
+    )
+    viewModel.updateReportCustomizationConfig(updated)
+    if (invoiceTerms.trim() != uiState.storeConfig.terms.trim()) {
+      viewModel.updateStoreConfig(uiState.storeConfig.copy(terms = invoiceTerms.trim()))
+    }
+  }
 
   CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
     Dialog(
@@ -214,7 +238,27 @@ fun ReportCustomizerModal(
                 onOpenShadedColorDialog = { showShadedFieldColorDialog = true }
               )
               2 -> TabVisibilityElements(config, viewModel)
-              3 -> TabCustomElements(config, viewModel)
+              3 -> TabCustomElements(
+                config = config,
+                headerTitle = headerTitle,
+                onHeaderTitleChange = { headerTitle = it },
+                noticeBadge = noticeBadge,
+                onNoticeBadgeChange = { noticeBadge = it },
+                taxCrNumber = taxCrNumber,
+                onTaxCrNumberChange = { taxCrNumber = it },
+                footerText = footerText,
+                onFooterTextChange = { footerText = it },
+                accountantName = accountantName,
+                onAccountantNameChange = { accountantName = it },
+                managerName = managerName,
+                onManagerNameChange = { managerName = it },
+                invoiceTerms = invoiceTerms,
+                onInvoiceTermsChange = { invoiceTerms = it },
+                onSaveNow = {
+                  saveCustomTextChanges()
+                  viewModel.showToast("✅ تم حفظ التعديلات فوراً بنجاح!")
+                }
+              )
             }
           }
 
@@ -243,7 +287,11 @@ fun ReportCustomizerModal(
               }
 
               Button(
-                onClick = onDismiss,
+                onClick = {
+                  saveCustomTextChanges()
+                  viewModel.showToast("✅ تم حفظ كافة تعديلات ونصوص التقارير والطباعة بنجاح!")
+                  onDismiss()
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0070BA)),
                 shape = RoundedCornerShape(8.dp),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
@@ -768,27 +816,22 @@ private fun TabVisibilityElements(
 @Composable
 private fun TabCustomElements(
   config: ReportCustomizationConfig,
-  viewModel: InvoiceViewModel
+  headerTitle: String,
+  onHeaderTitleChange: (String) -> Unit,
+  noticeBadge: String,
+  onNoticeBadgeChange: (String) -> Unit,
+  taxCrNumber: String,
+  onTaxCrNumberChange: (String) -> Unit,
+  footerText: String,
+  onFooterTextChange: (String) -> Unit,
+  accountantName: String,
+  onAccountantNameChange: (String) -> Unit,
+  managerName: String,
+  onManagerNameChange: (String) -> Unit,
+  invoiceTerms: String,
+  onInvoiceTermsChange: (String) -> Unit,
+  onSaveNow: () -> Unit
 ) {
-  var headerTitle by remember(config.customHeaderTitle) { mutableStateOf(config.customHeaderTitle) }
-  var noticeBadge by remember(config.customNoticeBadge) { mutableStateOf(config.customNoticeBadge) }
-  var taxCrNumber by remember(config.taxOrCrNumber) { mutableStateOf(config.taxOrCrNumber) }
-  var footerText by remember(config.customFooterText) { mutableStateOf(config.customFooterText) }
-  var accountantName by remember(config.accountantSignatureName) { mutableStateOf(config.accountantSignatureName) }
-  var managerName by remember(config.managerSignatureName) { mutableStateOf(config.managerSignatureName) }
-
-  fun applyChanges() {
-    val updated = config.copy(
-      customHeaderTitle = headerTitle.trim(),
-      customNoticeBadge = noticeBadge.trim(),
-      taxOrCrNumber = taxCrNumber.trim(),
-      customFooterText = footerText.trim(),
-      accountantSignatureName = accountantName.trim(),
-      managerSignatureName = managerName.trim()
-    )
-    viewModel.updateReportCustomizationConfig(updated)
-  }
-
   LazyColumn(
     modifier = Modifier.fillMaxSize(),
     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -807,6 +850,22 @@ private fun TabCustomElements(
       )
     }
 
+    // Quick Save Button at top
+    item {
+      Button(
+        onClick = onSaveNow,
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0070BA)),
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .height(44.dp)
+      ) {
+        Icon(Icons.Default.Save, contentDescription = null, tint = Color.White)
+        Spacer(modifier = Modifier.width(6.dp))
+        Text("💾 حفظ التعديلات والنصوص فوراً", fontWeight = FontWeight.Bold, fontSize = 13.5.sp, color = Color.White)
+      }
+    }
+
     // Custom Header Title
     item {
       Card(
@@ -820,10 +879,7 @@ private fun TabCustomElements(
           Text("مثال: فرع الرياض الرئيسي - شركة المملكة للاتصالات", fontSize = 11.sp, color = Color.Gray)
           OutlinedTextField(
             value = headerTitle,
-            onValueChange = {
-              headerTitle = it
-              applyChanges()
-            },
+            onValueChange = onHeaderTitleChange,
             placeholder = { Text("أدخل عنوان إضافي في أعلى التقرير (اختياري)") },
             modifier = Modifier.fillMaxWidth()
           )
@@ -844,10 +900,7 @@ private fun TabCustomElements(
           Text("مثال: نسخة رسمية معتمدة ضريبياً أو كشف حساب مدقق", fontSize = 11.sp, color = Color.Gray)
           OutlinedTextField(
             value = noticeBadge,
-            onValueChange = {
-              noticeBadge = it
-              applyChanges()
-            },
+            onValueChange = onNoticeBadgeChange,
             placeholder = { Text("مثال: ★ نسخة إلكترونية معتمدة ★") },
             modifier = Modifier.fillMaxWidth()
           )
@@ -867,10 +920,7 @@ private fun TabCustomElements(
           Text("🏢 الرقم الضريبي / السجل التجاري في الترويسة", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFF333333))
           OutlinedTextField(
             value = taxCrNumber,
-            onValueChange = {
-              taxCrNumber = it
-              applyChanges()
-            },
+            onValueChange = onTaxCrNumberChange,
             placeholder = { Text("مثال: 310294857200003") },
             modifier = Modifier.fillMaxWidth()
           )
@@ -894,10 +944,7 @@ private fun TabCustomElements(
               Spacer(modifier = Modifier.height(2.dp))
               OutlinedTextField(
                 value = accountantName,
-                onValueChange = {
-                  accountantName = it
-                  applyChanges()
-                },
+                onValueChange = onAccountantNameChange,
                 placeholder = { Text("مثال: أ. محمد") },
                 modifier = Modifier.fillMaxWidth()
               )
@@ -908,15 +955,34 @@ private fun TabCustomElements(
               Spacer(modifier = Modifier.height(2.dp))
               OutlinedTextField(
                 value = managerName,
-                onValueChange = {
-                  managerName = it
-                  applyChanges()
-                },
+                onValueChange = onManagerNameChange,
                 placeholder = { Text("مثال: المدير العام") },
                 modifier = Modifier.fillMaxWidth()
               )
             }
           }
+        }
+      }
+    }
+
+    // Invoice Terms & Conditions
+    item {
+      Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color(0xFFE0E0E0))
+      ) {
+        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+          Text("📋 شروط وملاحظات الفاتورة والتقارير (Terms & Conditions)", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFF333333))
+          Text("تظهر أسفل الفواتير والتقارير عند تفعيل خيار الشروط والملاحظات:", fontSize = 11.sp, color = Color.Gray)
+          OutlinedTextField(
+            value = invoiceTerms,
+            onValueChange = onInvoiceTermsChange,
+            placeholder = { Text("أدخل الشروط والأحكام وملاحظات الفاتورة...") },
+            minLines = 3,
+            modifier = Modifier.fillMaxWidth()
+          )
         }
       }
     }
@@ -934,10 +1000,7 @@ private fun TabCustomElements(
           Text("مثال: نشكر لكم حسن تعاملكم - البضاعة المباعة ترد وتستبدل خلال 3 أيام", fontSize = 11.sp, color = Color.Gray)
           OutlinedTextField(
             value = footerText,
-            onValueChange = {
-              footerText = it
-              applyChanges()
-            },
+            onValueChange = onFooterTextChange,
             placeholder = { Text("أدخل الملاحظة الختامية للتقارير...") },
             modifier = Modifier.fillMaxWidth()
           )
@@ -945,8 +1008,33 @@ private fun TabCustomElements(
       }
     }
 
+    // Bottom Save Button
     item {
-      LiveReportPreviewCard(config)
+      Button(
+        onClick = onSaveNow,
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0070BA)),
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .height(48.dp)
+      ) {
+        Icon(Icons.Default.Save, contentDescription = null, tint = Color.White)
+        Spacer(modifier = Modifier.width(6.dp))
+        Text("💾 حفظ التعديلات والنصوص فوراً", fontWeight = FontWeight.Black, fontSize = 14.sp, color = Color.White)
+      }
+    }
+
+    item {
+      LiveReportPreviewCard(
+        config.copy(
+          customHeaderTitle = headerTitle,
+          customNoticeBadge = noticeBadge,
+          taxOrCrNumber = taxCrNumber,
+          customFooterText = footerText,
+          accountantSignatureName = accountantName,
+          managerSignatureName = managerName
+        )
+      )
     }
   }
 }

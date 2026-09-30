@@ -429,6 +429,7 @@ object PrintHelper {
         </table>
         $subCardHtml
         $termsHtml
+        ${getSignaturesHtml(reportConfig, storeConfig)}
         ${getCustomFooterTextHtml(reportConfig)}
       </div>
       </body>

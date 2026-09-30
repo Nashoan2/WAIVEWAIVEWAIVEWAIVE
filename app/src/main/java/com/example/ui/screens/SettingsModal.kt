@@ -353,11 +353,11 @@ fun SettingsModal(viewModel: InvoiceViewModel, onDismiss: () -> Unit) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Subtitle: "إدارة التطبيق وتخصيصه حسب احتياجاتك"
+            // Subtitle: المطور عبد العزيز راجح
             Text(
-              text = "إدارة التطبيق وتخصيصه حسب احتياجاتك",
-              fontSize = 14.sp,
-              fontWeight = FontWeight.SemiBold,
+              text = "المطور عبد العزيز راجح",
+              fontSize = 15.sp,
+              fontWeight = FontWeight.Bold,
               color = Color.White,
               textAlign = TextAlign.Center
             )
@@ -1129,9 +1129,6 @@ private fun BackupManagementDialog(
   viewModel: InvoiceViewModel,
   onDismiss: () -> Unit
 ) {
-  val context = LocalContext.current
-  var backupText by remember { mutableStateOf("") }
-
   CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
     Dialog(
       onDismissRequest = onDismiss,
@@ -1235,92 +1232,13 @@ private fun BackupManagementDialog(
             }
           }
 
-          HorizontalDivider()
-
-          Text(
-            text = "📋 نسخ احتياطي يدوي فوري (JSON):",
-            fontWeight = FontWeight.Bold,
-            fontSize = 13.5.sp,
-            color = Color(0xFF1E1B4B)
-          )
-
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-          ) {
-            Button(
-              onClick = {
-                val json = viewModel.exportBackup()
-                backupText = json
-                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-                val clip = ClipData.newPlainText("Backup", json)
-                clipboard?.setPrimaryClip(clip)
-                viewModel.showToast("✅ تم تصدير ونسخ بيانات التطبيق إلى الحافظة!")
-              },
-              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0284C7)),
-              shape = RoundedCornerShape(8.dp),
-              modifier = Modifier
-                .weight(1f)
-                .height(40.dp),
-              contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
-            ) {
-              Text("📋 تصدير", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White, maxLines = 1)
-            }
-
-            OutlinedButton(
-              onClick = {
-                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-                val item = clipboard?.primaryClip?.getItemAt(0)?.text?.toString()
-                if (!item.isNullOrBlank()) {
-                  backupText = item
-                  viewModel.showToast("📋 تم لصق النص من الحافظة!")
-                } else {
-                  viewModel.showToast("⚠️ الحافظة فارغة")
-                }
-              },
-              shape = RoundedCornerShape(8.dp),
-              modifier = Modifier
-                .weight(1f)
-                .height(40.dp),
-              contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
-            ) {
-              Text("📋 لصق", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0284C7), maxLines = 1)
-            }
-
-            Button(
-              onClick = {
-                if (backupText.isNotBlank()) {
-                  viewModel.importBackup(backupText)
-                } else {
-                  viewModel.showToast("⚠️ يرجى لصق نص النسخة الاحتياطية أولاً.")
-                }
-              },
-              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF16A34A)),
-              shape = RoundedCornerShape(8.dp),
-              modifier = Modifier
-                .weight(1f)
-                .height(40.dp),
-              contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
-            ) {
-              Text("📥 استعادة", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White, maxLines = 1)
-            }
-          }
-
-          OutlinedTextField(
-            value = backupText,
-            onValueChange = { backupText = it },
-            label = { Text("نص النسخة الاحتياطية (JSON)") },
-            placeholder = { Text("الصق بيانات النسخة الاحتياطية هنا للاستعادة") },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 3,
-            shape = RoundedCornerShape(10.dp)
-          )
+          Spacer(modifier = Modifier.height(10.dp))
 
           Button(
             onClick = onDismiss,
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6B7280)),
             shape = RoundedCornerShape(10.dp),
-            modifier = Modifier.fillMaxWidth().height(40.dp)
+            modifier = Modifier.fillMaxWidth().height(42.dp)
           ) {
             Text("إغلاق النافذة", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
           }

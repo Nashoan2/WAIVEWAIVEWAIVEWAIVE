@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -476,6 +477,16 @@ fun InvoiceReportScreen(
                       lineHeight = 16.sp,
                       maxLines = 1
                     )
+                    if (effectiveReportConfig.taxOrCrNumber.isNotBlank()) {
+                      Text(
+                        text = "الرقم الضريبي/السجل: ${effectiveReportConfig.taxOrCrNumber}",
+                        fontSize = (11 * effectiveReportConfig.fontScale).sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF333333),
+                        lineHeight = 14.sp,
+                        maxLines = 1
+                      )
+                    }
                   }
                 } else {
                   Spacer(modifier = Modifier.weight(1.35f))
@@ -530,6 +541,16 @@ fun InvoiceReportScreen(
                           lineHeight = 16.sp,
                           maxLines = 1
                         )
+                        if (effectiveReportConfig.taxOrCrNumber.isNotBlank()) {
+                          Text(
+                            text = "CR/TAX: ${effectiveReportConfig.taxOrCrNumber}",
+                            fontSize = (11 * effectiveReportConfig.fontScale).sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF333333),
+                            lineHeight = 14.sp,
+                            maxLines = 1
+                          )
+                        }
                       }
                     }
                   }
@@ -798,7 +819,7 @@ fun InvoiceReportScreen(
               ) {
                 // 1. Grand Total covering columns القيمة الإجمالية (2.1f) + سعر الوحدة (2.1f) = 4.2f
                 if (isDisplayMode) {
-                  // Display Mode: Solid green banner for "الإجمالي" with crisp white text
+                  // Display Mode: Solid red banner for "الإجمالي" with crisp white text
                   Column(
                     modifier = Modifier
                       .weight(4.2f)
@@ -809,7 +830,7 @@ fun InvoiceReportScreen(
                     Box(
                       modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFF2E7D32))
+                        .background(Color(0xFFD32F2F))
                         .padding(vertical = 3.dp),
                       contentAlignment = Alignment.Center
                     ) {
@@ -848,14 +869,14 @@ fun InvoiceReportScreen(
                             text = sym,
                             fontSize = totalSymFontSize.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = Color(0xFFD32F2F)
                           )
                           Spacer(modifier = Modifier.width(3.dp))
                           Text(
                             text = formattedGrandTotal,
                             fontSize = totalNumberFontSize.sp,
                             fontWeight = FontWeight.Black,
-                            color = Color.Black,
+                            color = Color(0xFFD32F2F),
                             maxLines = 1,
                             softWrap = false
                           )
@@ -864,7 +885,7 @@ fun InvoiceReportScreen(
                     }
                   }
                 } else {
-                  // Classic Mode: Green text "الإجمالي" on white background
+                  // Classic Mode: Red text "الإجمالي" on white background
                   Column(
                     modifier = Modifier
                       .weight(4.2f)
@@ -877,7 +898,7 @@ fun InvoiceReportScreen(
                       text = "الإجمالي",
                       fontSize = 12.5.sp,
                       fontWeight = FontWeight.ExtraBold,
-                      color = Color(0xFF2E7D32),
+                      color = Color(0xFFD32F2F),
                       textAlign = TextAlign.Center
                     )
                     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -901,14 +922,14 @@ fun InvoiceReportScreen(
                           text = sym,
                           fontSize = totalSymFontSize.sp,
                           fontWeight = FontWeight.Bold,
-                          color = Color.Black
+                          color = Color(0xFFD32F2F)
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
                           text = formattedGrandTotal,
                           fontSize = totalNumberFontSize.sp,
                           fontWeight = FontWeight.Black,
-                          color = Color.Black,
+                          color = Color(0xFFD32F2F),
                           maxLines = 1,
                           softWrap = false
                         )
@@ -932,7 +953,7 @@ fun InvoiceReportScreen(
                   text = "Total",
                   weight = 1.1f,
                   isBold = true,
-                  textColor = InvoiceBorderColor,
+                  textColor = Color(0xFFD32F2F),
                   fontSizeSp = 12f,
                   singleLine = true
                 )
@@ -1159,6 +1180,82 @@ fun InvoiceReportScreen(
                       }
                     }
                   }
+                }
+              }
+            }
+
+            // Optional Signatures Section
+            if (effectiveReportConfig.showSignatures) {
+              Spacer(modifier = Modifier.height(14.dp))
+              Row(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 8.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+              ) {
+                // Accountant Signature
+                Column(
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  modifier = Modifier.weight(1f)
+                ) {
+                  val accTitle = if (effectiveReportConfig.accountantSignatureName.isNotBlank())
+                    "توقيع المحاسب / المسؤول (${effectiveReportConfig.accountantSignatureName})"
+                  else "توقيع المحاسب / المسؤول"
+                  Text(
+                    text = accTitle,
+                    fontSize = (11.5 * effectiveReportConfig.fontScale).sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF333333)
+                  )
+                  Spacer(modifier = Modifier.height(26.dp))
+                  HorizontalDivider(
+                    modifier = Modifier.width(130.dp),
+                    thickness = 1.dp,
+                    color = Color.Gray
+                  )
+                }
+
+                // Official Seal Stamp
+                if (effectiveReportConfig.showStampSeal) {
+                  Surface(
+                    shape = CircleShape,
+                    color = Color(0xFFFFEBEE),
+                    border = BorderStroke(2.dp, Color(0xFFC62828)),
+                    modifier = Modifier.size(56.dp)
+                  ) {
+                    Box(contentAlignment = Alignment.Center) {
+                      Text(
+                        "ختم رسمي\nمعتمد",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color(0xFFC62828),
+                        textAlign = TextAlign.Center
+                      )
+                    }
+                  }
+                }
+
+                // Manager Signature
+                Column(
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  modifier = Modifier.weight(1f)
+                ) {
+                  val mgrTitle = if (effectiveReportConfig.managerSignatureName.isNotBlank())
+                    "توقيع المدير العام (${effectiveReportConfig.managerSignatureName})"
+                  else "توقيع المدير العام"
+                  Text(
+                    text = mgrTitle,
+                    fontSize = (11.5 * effectiveReportConfig.fontScale).sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF333333)
+                  )
+                  Spacer(modifier = Modifier.height(26.dp))
+                  HorizontalDivider(
+                    modifier = Modifier.width(130.dp),
+                    thickness = 1.dp,
+                    color = Color.Gray
+                  )
                 }
               }
             }
